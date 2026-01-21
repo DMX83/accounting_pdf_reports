@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from eagle import fields, models, _
-from eagle.exceptions import UserError
+from odoo import fields, models, _
+from odoo.exceptions import UserError
 
 
 class AccountReportGeneralLedger(models.TransientModel):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Eagle. See LICENSE file for full copyright and licensing details.
 
-from eagle import api, models, fields
+from odoo import api, models, fields
 
 
 class AccountFinancialReport(models.Model):

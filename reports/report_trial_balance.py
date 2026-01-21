@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import time
-from eagle import api, models, _
-from eagle.exceptions import UserError
+from odoo import api, models, _
+from odoo.exceptions import UserError
 
 
 class ReportTrialBalance(models.AbstractModel):

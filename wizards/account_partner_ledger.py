@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from eagle import fields, models, _
+from odoo import fields, models, _
 
 
 class AccountPartnerLedger(models.TransientModel):

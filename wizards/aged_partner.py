@@ -2,8 +2,8 @@
 
 import time
 from dateutil.relativedelta import relativedelta
-from eagle import api, fields, models, _
-from eagle.exceptions import UserError
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class AccountAgedTrialBalance(models.TransientModel):

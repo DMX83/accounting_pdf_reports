@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from . import account_common_report
+from . import account_common_journal_report
 from . import account_financial_report
 from . import account_report
 from . import account_report_common_partner

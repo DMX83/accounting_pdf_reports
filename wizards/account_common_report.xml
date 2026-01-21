@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_common_report_view" model="ir.ui.view">
+        <field name="name">account.common.report.form</field>
+        <field name="model">account.common.report</field>
+        <field name="arch" type="xml">
+            <form string="Account Report">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="journal_ids" widget="many2many_tags"/>
+                        <field name="target_move"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="check_report" string="Print" type="object" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

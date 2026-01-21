@@ -2,10 +2,10 @@
 # Part of Eagle. See LICENSE file for full copyright and licensing details.
 
 {
-    'name': 'Eagle 13 Accounting PDF Reports',
-    'version': '13.0.1.0.2',
+    'name': 'Accounting PDF Reports',
+    'version': '18.0.1.0.0',
     'category': 'Invoicing Management',
-    'summary': 'Accounting Reports For Eagle 13',
+    'summary': 'Accounting PDF Reports',
     'sequence': '10',
     'author': 'Eagle ERP',
     'license': 'LGPL-3',
@@ -19,6 +19,7 @@
         'security/security.xml',
         'views/account_pdf_reports.xml',
         'views/account_reports_settings.xml',
+        'wizards/account_common_report.xml',
         'wizards/partner_ledger.xml',
         'wizards/general_ledger.xml',
         'wizards/trial_balance.xml',

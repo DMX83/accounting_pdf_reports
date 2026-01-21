@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from eagle import models
+from odoo import models
 
 
 class AccountTaxReport(models.TransientModel):
