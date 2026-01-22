@@ -2,6 +2,7 @@
 
 from odoo import api, models, _
 from odoo.exceptions import UserError
+from .query_utils import query_get
 
 
 class ReportTax(models.AbstractModel):
@@ -33,7 +34,7 @@ class ReportTax(models.AbstractModel):
     def _compute_from_amls(self, options, taxes):
         #compute the tax amount
         sql = self._sql_from_amls_one()
-        tables, where_clause, where_params = self.env['account.move.line']._query_get()
+        tables, where_clause, where_params = query_get(self.env['account.move.line'])
         query = sql % (tables, where_clause)
         self.env.cr.execute(query, where_params)
         results = self.env.cr.fetchall()

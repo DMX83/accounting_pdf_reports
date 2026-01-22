@@ -3,6 +3,7 @@
 import time
 from odoo import api, models, _
 from odoo.exceptions import UserError
+from .query_utils import query_get
 
 
 class ReportJournal(models.AbstractModel):
@@ -92,7 +93,7 @@ class ReportJournal(models.AbstractModel):
         return res
 
     def _get_query_get_clause(self, data):
-        return self.env['account.move.line'].with_context(data['form'].get('used_context', {}))._query_get()
+        return query_get(self.env['account.move.line'].with_context(data['form'].get('used_context', {})))
 
     @api.model
     def _get_report_values(self, docids, data=None):

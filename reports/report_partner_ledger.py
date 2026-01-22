@@ -3,6 +3,7 @@
 import time
 from odoo import api, models, _
 from odoo.exceptions import UserError
+from .query_utils import query_get
 
 
 class ReportPartnerLedger(models.AbstractModel):
@@ -11,7 +12,7 @@ class ReportPartnerLedger(models.AbstractModel):
     def _lines(self, data, partner):
         full_account = []
         currency = self.env['res.currency']
-        query_get_data = self.env['account.move.line'].with_context(data['form'].get('used_context', {}))._query_get()
+        query_get_data = query_get(self.env['account.move.line'].with_context(data['form'].get('used_context', {})))
         reconcile_clause = "" if data['form']['reconciled'] else ' AND "account_move_line".full_reconcile_id IS NULL '
         params = [partner.id, tuple(data['computed']['move_state']), tuple(data['computed']['account_ids'])] + query_get_data[2]
         query = """
@@ -48,7 +49,7 @@ class ReportPartnerLedger(models.AbstractModel):
         if field not in ['debit', 'credit', 'debit - credit']:
             return
         result = 0.0
-        query_get_data = self.env['account.move.line'].with_context(data['form'].get('used_context', {}))._query_get()
+        query_get_data = query_get(self.env['account.move.line'].with_context(data['form'].get('used_context', {})))
         reconcile_clause = "" if data['form']['reconciled'] else ' AND "account_move_line".full_reconcile_id IS NULL '
 
         params = [partner.id, tuple(data['computed']['move_state']), tuple(data['computed']['account_ids'])] + query_get_data[2]
@@ -74,7 +75,7 @@ class ReportPartnerLedger(models.AbstractModel):
         data['computed'] = {}
 
         obj_partner = self.env['res.partner']
-        query_get_data = self.env['account.move.line'].with_context(data['form'].get('used_context', {}))._query_get()
+        query_get_data = query_get(self.env['account.move.line'].with_context(data['form'].get('used_context', {})))
         data['computed']['move_state'] = ['draft', 'posted']
         if data['form'].get('target_move', 'all') == 'posted':
             data['computed']['move_state'] = ['posted']

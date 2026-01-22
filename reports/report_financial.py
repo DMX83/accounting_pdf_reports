@@ -3,6 +3,7 @@
 import time
 from odoo import api, models, _
 from odoo.exceptions import UserError
+from .query_utils import query_get
 
 
 class ReportFinancial(models.AbstractModel):
@@ -21,7 +22,7 @@ class ReportFinancial(models.AbstractModel):
         for account in accounts:
             res[account.id] = dict.fromkeys(mapping, 0.0)
         if accounts:
-            tables, where_clause, where_params = self.env['account.move.line']._query_get()
+            tables, where_clause, where_params = query_get(self.env['account.move.line'])
             tables = tables.replace('"', '') if tables else "account_move_line"
             wheres = [""]
             if where_clause.strip():
@@ -118,23 +119,24 @@ class ReportFinancial(models.AbstractModel):
                     #financial reports for Assets, liabilities...)
                     flag = False
                     account = self.env['account.account'].browse(account_id)
+                    company_currency = (account.company_ids[:1] or self.env.company).currency_id
                     vals = {
                         'name': account.code + ' ' + account.name,
                         'balance': value['balance'] * float(report.sign) or 0.0,
                         'type': 'account',
                         'level': report.display_detail == 'detail_with_hierarchy' and 4,
-                        'account_type': account.internal_type,
+                        'account_type': account.account_type,
                     }
                     if data['debit_credit']:
                         vals['debit'] = value['debit']
                         vals['credit'] = value['credit']
-                        if not account.company_id.currency_id.is_zero(vals['debit']) or not account.company_id.currency_id.is_zero(vals['credit']):
+                        if not company_currency.is_zero(vals['debit']) or not company_currency.is_zero(vals['credit']):
                             flag = True
-                    if not account.company_id.currency_id.is_zero(vals['balance']):
+                    if not company_currency.is_zero(vals['balance']):
                         flag = True
                     if data['enable_filter']:
                         vals['balance_cmp'] = value['comp_bal'] * float(report.sign)
-                        if not account.company_id.currency_id.is_zero(vals['balance_cmp']):
+                        if not company_currency.is_zero(vals['balance_cmp']):
                             flag = True
                     if flag:
                         sub_lines.append(vals)
@@ -147,13 +149,19 @@ class ReportFinancial(models.AbstractModel):
         if not data.get('form') or not self.env.context.get('active_model') or not self.env.context.get('active_id'):
             raise UserError(_("Form content is missing, this report cannot be printed."))
 
-        self.model = self.env.context.get('active_model')
-        docs = self.env[self.model].browse(self.env.context.get('active_id'))
-        report_lines = self.get_account_lines(data.get('form'))
+        form = data['form']
+        for key in ('date_from', 'date_to', 'date_from_cmp', 'date_to_cmp'):
+            value = form.get(key)
+            if hasattr(value, 'strftime'):
+                form[key] = value.strftime('%Y-%m-%d')
+
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_id'))
+        report_lines = self.get_account_lines(form)
         return {
             'doc_ids': self.ids,
-            'doc_model': self.model,
-            'data': data['form'],
+            'doc_model': model,
+            'data': form,
             'docs': docs,
             'time': time,
             'get_account_lines': report_lines,

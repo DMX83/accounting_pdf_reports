@@ -3,6 +3,7 @@
 import time
 from odoo import api, models, _
 from odoo.exceptions import UserError
+from .query_utils import query_get
 
 
 class ReportTrialBalance(models.AbstractModel):
@@ -23,7 +24,7 @@ class ReportTrialBalance(models.AbstractModel):
 
         account_result = {}
         # Prepare sql query base on selected parameters from wizard
-        tables, where_clause, where_params = self.env['account.move.line']._query_get()
+        tables, where_clause, where_params = query_get(self.env['account.move.line'])
         tables = tables.replace('"','')
         if not tables:
             tables = 'account_move_line'
@@ -62,14 +63,14 @@ class ReportTrialBalance(models.AbstractModel):
         if not data.get('form') or not self.env.context.get('active_model'):
             raise UserError(_("Form content is missing, this report cannot be printed."))
 
-        self.model = self.env.context.get('active_model')
-        docs = self.env[self.model].browse(self.env.context.get('active_ids', []))
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_ids', []))
         display_account = data['form'].get('display_account')
-        accounts = docs if self.model == 'account.account' else self.env['account.account'].search([])
+        accounts = docs if model == 'account.account' else self.env['account.account'].search([])
         account_res = self.with_context(data['form'].get('used_context'))._get_accounts(accounts, display_account)
         return {
             'doc_ids': self.ids,
-            'doc_model': self.model,
+            'doc_model': model,
             'data': data['form'],
             'docs': docs,
             'time': time,
